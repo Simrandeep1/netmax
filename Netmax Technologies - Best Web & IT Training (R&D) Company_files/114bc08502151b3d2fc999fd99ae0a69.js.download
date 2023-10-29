@@ -1,0 +1,82 @@
+// Get localized data from admin
+var jsrmspFD = jsrmspFData;
+
+(function($){
+"use strict";
+	jQuery(document).ready(function(){
+		// Search Result
+		$('#result-form').on('submit',function(e){
+			//Execute when submit
+			e.preventDefault();
+			
+			//Add necessary veriable
+			
+			var exam_class = $('#nonp-exam-class').val();
+			var exam_year = $('#nonp-exam-year').val();
+			var exam_section = $('#nonp-exam-section').val();
+			var exam_group = $('#nonp-exam-group').val();
+			var exam_roll = $('#nonp-exam-roll').val();
+			var exam_reg = $('#nonp-exam-reg').val();
+			var student_name = $('#nonp-student-name').val();
+			var birthdate = $('#nonp-birth-date').val();
+			
+			$.ajax({
+				type: 'POST',
+				url:  jsrmspFD.ajaxUrl,
+				data: {
+					action: 'jsrmsp_student_result_view',
+					examclass: exam_class,
+					examyear: exam_year,
+					examsection: exam_section,
+					examgroup: exam_group,
+					examroll: exam_roll,
+					examreg: exam_reg,
+					student_name: student_name,
+					birthdate: birthdate,
+				},
+				success: function(data){
+					$('.result-container').html(data);
+					$('.jsrmsp-print').show();
+				},
+				error: function(XMLHttpRequest, textStatus, errorTrown){
+					alert(errorTrown);
+				},
+				beforeSend: function(){
+					$('.loader').show()
+					$('.result-container').html('');
+				},
+				complete: function(){
+					$('.loader').hide();
+				}
+	  
+			}); // End ajax
+
+		});
+
+		// Process the printing request
+
+		window.print_this = function(id) {
+		    var prtContent = document.getElementById(id);
+		    var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+		    
+		    WinPrint.document.write('<link href="http://fonts.googleapis.com/css?family=Roboto:400,1.0.100italic,300,300italic,400italic,500italic,500,700,700italic,900,900italic" rel="stylesheet" type="text/css">');
+		    WinPrint.document.write('<link rel="stylesheet" type="text/css" href="'+jsrmspFD.printCss+'css/shortcode-print.css?v=1.0.0">');
+		  	
+		    WinPrint.document.write(prtContent.innerHTML);
+		    WinPrint.document.close();
+		    /*
+		    WinPrint.setTimeout(function(){
+		      WinPrint.focus();
+		      WinPrint.print();
+		      WinPrint.close();
+		    }, 1000);
+		    */
+		} // End print
+
+		$(document).on('click', '.jsrmsp-print-btn', function(){
+			print_this('jsrmsp-print-area');
+		});
+
+	});
+})(jQuery);
+;
